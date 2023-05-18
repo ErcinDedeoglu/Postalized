@@ -18,6 +18,9 @@ RUN apt-get update && apt-get install -y \
 # Copy the libpostal directory contents into the container at /libpostal
 COPY libpostal /libpostal
 
+# Add this line to adjust file permissions
+RUN chmod +x /libpostal/bootstrap.sh
+
 # Build and install libpostal
 RUN cd /libpostal \
     && ./bootstrap.sh \
