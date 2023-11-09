@@ -30,6 +30,7 @@ jobs:
           rm -f src/libpostal/.gitmodules
           find src/libpostal -name "*.md" -exec rm {} \;
           find src/libpostal -name "*.txt" -exec rm {} \;
+          find src/libpostal -name "*.yml" -exec rm {} \;
 
       - name: 💾 Commit and push sync changes
         run: |

@@ -1,52 +1,77 @@
-# Postalized
+# [Postalized](https://github.com/ErcinDedeoglu/Postalized)
 
-Postalized is an open-source project that provides a RESTful API for the powerful [libpostal](https://github.com/openvenues/libpostal) library, a C library for parsing/normalizing street addresses around the world. This project allows you to make HTTP requests to parse and expand street addresses.
+Postalized is an open source project that provides a simple and efficient way to parse and expand addresses using the power of `libpostal`. This project wraps `libpostal` functionalities in a Flask-based web API, making it easy to integrate address parsing and expansion into web applications.
 
-The libpostal library is needed to be built and installed in the docker container, which is automatically done in the Dockerfile included in this repository.
+## Features
 
-## Getting Started
+- **Address Parsing**: Break down addresses into components with high accuracy.
+- **Address Expansion**: Generate normalized variations of a given address.
+- Dockerized application for easy deployment and scaling.
 
-These instructions will help you to run Postalized locally for development and testing purposes.
+## Quick Start
 
 ### Prerequisites
 
-* Docker
-* Docker Compose
-* Git
+- Docker
 
-### Installation
+## Installation
 
-1. Clone the repository:
-`git clone https://github.com/ErcinDedeoglu/Postalized.git`
+Postalized is available as a Docker image on Docker Hub. You can easily pull and run the Postalized service without manually building it.
 
-2. Build the Docker image:
-`docker build -t postalized .`
+### Pulling the Docker Image
 
-3. Start the service:
-`docker run -d -p 8080:8080 postalized`
+You can pull the latest version of Postalized from Docker Hub using the following command:
 
-The Postalized API should now be running at "http://localhost:8080".
-
-API Endpoints
--------------
-### Parse
-**Description:** Parses a given address string into components.
-**Endpoint:** /parse
-**Method:** POST
-**Request Body:**
-```
-{
-    "address": "The address string to parse"
-}
+```bash
+docker pull dublok/postalized:latest
 ```
 
-**Success Response:** JSON array of parsed components
+This command retrieves the latest image of Postalized, ensuring you have the most up-to-date version.
 
-**CURL Command:**
-`curl -X POST -H "Content-Type: application/json" -d '{"address": "123 Main St"}' http://localhost:8080/parse`
+### Running the Docker Image
 
-**Sample Response:**
+After pulling the image, you can run it using:
+
+```bash
+docker run -p 8080:8080 dublok/postalized
 ```
+
+This will start a container running Postalized and bind port 8080 on your host machine to port 8080 in the Docker container, making the API accessible via `http://localhost:8080`.
+
+
+Alternatively, you can build the Docker image manually:
+
+```bash
+git clone https://github.com/ErcinDedeoglu/Postalized.git
+cd Postalized
+docker build -t postalized .
+```
+
+### Running the Application
+
+To start the application, run:
+
+```bash
+docker run -p 8080:8080 postalized
+```
+
+The API should now be available at `http://localhost:8080`.
+
+## Usage
+
+Postalized exposes two endpoints: `/parse` for parsing addresses and `/expand` for expanding addresses.
+
+### Parsing an Address
+
+Send a POST request with a JSON body containing the address:
+
+```bash
+curl -X POST -H "Content-Type: application/json" -d '{"address":"123 Main St"}' http://localhost:8080/parse
+```
+
+Example response:
+
+```json
 [
     {
         "label": "house_number",
@@ -54,32 +79,44 @@ API Endpoints
     },
     {
         "label": "road",
-        "value": "main st"
+        "value": "Main St"
     }
 ]
 ```
 
-### Expand
-**Description:** Expands a given address string into a list of possible expansions.
-**Endpoint:** /expand
-**Method:** POST
-**Request Body:**
-```
-{
-    "address": "The address string to expand"
-}
+### Expanding an Address
+
+Send a POST request with a JSON body containing the address:
+
+```bash
+curl -X POST -H "Content-Type: application/json" -d '{"address":"123 Main Street"}' http://localhost:8080/expand
 ```
 
-**Success Response:** JSON array of possible expansions
+Example response:
 
-**CURL Command:**
-`curl -X POST -H "Content-Type: application/json" -d '{"address": "The address string to expand"}' http://localhost:8080/expand`
-
-**Sample Response:**
-```
+```json
 [
-    "the address string to expand",
-    "the address string to expand",
-    "the address string to expand"
+    "123 main street",
+    "123 main st"
 ]
 ```
+
+These examples demonstrate successful responses from the API. The parsing endpoint breaks down the input address into its components, and the expansion endpoint provides normalized variations of the input address.
+
+---
+
+## Development
+
+For developing and contributing to Postalized, please follow the steps below:
+
+1. Fork and clone the repository.
+2. Make changes and test your code.
+3. Submit a pull request with a clear list of what you've done.
+
+## Support
+
+If you are having issues, please let us know by creating an issue in the GitHub repository.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
