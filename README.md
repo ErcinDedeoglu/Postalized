@@ -2,6 +2,8 @@
 
 Postalized is an open source project that provides a simple and efficient way to parse and expand addresses using the power of `libpostal`. This project wraps `libpostal` functionalities in a Flask-based web API, making it easy to integrate address parsing and expansion into web applications.
 
+<div align="center"><img src="https://github.com/ErcinDedeoglu/Postalized/raw/main/assets/logo.png" width="400"></div>
+
 ## Features
 
 - **Address Parsing**: Break down addresses into components with high accuracy.
