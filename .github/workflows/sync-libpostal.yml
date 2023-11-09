@@ -1,0 +1,42 @@
+name: 📮 Sync libpostal
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  sync-latest-commit:
+    name: 🔄 Sync Repository with Latest Commit
+    runs-on: ubuntu-latest
+    if: (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule')
+    steps:
+      - name: 🛒 Checkout repository for sync
+        run: |
+          git clone https://x-access-token:${{ secrets.PAT }}@github.com/ErcinDedeoglu/Postalized.git .
+
+      - name: 🔄 Sync whisper.cpp repository to src/whisper
+        run: |
+          mkdir -p src
+          rm -rf src/libpostal
+          git clone https://github.com/openvenues/libpostal.git src/libpostal
+          rm -rf src/libpostal/.git
+          rm -rf src/libpostal/.github
+          rm -f src/libpostal/LICENSE
+          rm -f src/libpostal/.gitignore
+          rm -f src/libpostal/.gitmodules
+          find src/libpostal -name "*.md" -exec rm {} \;
+          find src/libpostal -name "*.txt" -exec rm {} \;
+
+      - name: 💾 Commit and push sync changes
+        run: |
+          git config --local user.name 'github-actions[bot]'
+          git config --local user.email 'github-actions[bot]@users.noreply.github.com'
+          git add src/libpostal
+          git commit -m "Sync with libpostal 🚀" -a || echo "No changes to commit 🛑"
+          git push origin 'main'
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
