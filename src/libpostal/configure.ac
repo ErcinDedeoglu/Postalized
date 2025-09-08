@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-m4_define([LIBPOSTAL_VERSION], [1.1.2])
+m4_define([LIBPOSTAL_VERSION], [1.1.3])
 
 AC_INIT([libpostal], LIBPOSTAL_VERSION)
 
@@ -149,7 +149,7 @@ AC_MSG_NOTICE([extra cflags for scanner.c: $CFLAGS_SCANNER_EXTRA])
 AC_SUBST(CFLAGS_SCANNER_EXTRA)
 
 
-LIBPOSTAL_SO_VERSION="${LIBPOSTAL_MAJOR_VERSION}:${LIBPOSTAL_MINOR_VERSION}:${LIBPOSTAL_PATCH_VERSION}"
+LIBPOSTAL_SO_VERSION="${LIBPOSTAL_MAJOR_VERSION}:${LIBPOSTAL_MINOR_VERSION}:0"
 AC_SUBST(LIBPOSTAL_SO_VERSION)
 
 AC_OUTPUT
