@@ -1679,6 +1679,8 @@ libpostal_address_parser_response_t *address_parser_parse(char *address, char *l
 
     tokenized_string_t *tokenized_str = tokenized_string_new_from_str_size(normalized, strlen(normalized), tokens->n);
 
+    uint32_array_clear(context->separators);
+
     for (size_t i = 0; i < tokens->n; i++) {
         token_t token = tokens->a[i];
         if (ADDRESS_PARSER_IS_SEPARATOR(token.type)) {
