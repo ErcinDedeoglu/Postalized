@@ -5,39 +5,47 @@ on:
   schedule:
     - cron: '0 0 * * *'
 
+concurrency:
+  group: sync-libpostal
+  cancel-in-progress: true
+
 permissions:
   contents: write
+  actions: write
 
 jobs:
   sync-latest-commit:
     name: 🔄 Sync Repository with Latest Commit
     runs-on: ubuntu-latest
-    if: (github.event_name == 'workflow_dispatch' || github.event_name == 'schedule')
     steps:
-      - name: 🛒 Checkout repository for sync
-        run: |
-          git clone https://x-access-token:${{ secrets.PAT }}@github.com/ErcinDedeoglu/Postalized.git .
+      - name: 🛒 Checkout repository
+        uses: actions/checkout@v4
 
-      - name: 🔄 Sync whisper.cpp repository to src/whisper
+      - name: 🔄 Vendor latest libpostal
         run: |
           mkdir -p src
           rm -rf src/libpostal
-          git clone https://github.com/openvenues/libpostal.git src/libpostal
-          rm -rf src/libpostal/.git
-          rm -rf src/libpostal/.github
-          rm -f src/libpostal/LICENSE
-          rm -f src/libpostal/.gitignore
-          rm -f src/libpostal/.gitmodules
-          find src/libpostal -name "*.md" -exec rm {} \;
-          find src/libpostal -name "*.txt" -exec rm {} \;
-          find src/libpostal -name "*.yml" -exec rm {} \;
+          git clone --depth 1 https://github.com/openvenues/libpostal.git src/libpostal
+          rm -rf src/libpostal/.git src/libpostal/.github
+          rm -f src/libpostal/LICENSE src/libpostal/.gitignore src/libpostal/.gitmodules
+          find src/libpostal -type f \( -name '*.md' -o -name '*.txt' -o -name '*.yml' \) -delete
 
       - name: 💾 Commit and push sync changes
+        id: commit
         run: |
           git config --local user.name 'github-actions[bot]'
-          git config --local user.email 'github-actions[bot]@users.noreply.github.com'
+          git config --local user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add src/libpostal
-          git commit -m "Sync with libpostal 🚀" -a || echo "No changes to commit 🛑"
-          git push origin 'main'
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git commit -m "Sync with libpostal 🚀"
+          git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: 🐳 Trigger Docker Images
+        if: steps.commit.outputs.changed == 'true'
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run publish-docker.yml --ref "${GITHUB_REF_NAME}"
